@@ -1,2 +1,2 @@
 # Portswigger-Labs
-Empezaremos a ver todos los laboratoris y documentarlos.
+Empezaremos a ver todos los laborators y documentarlos.

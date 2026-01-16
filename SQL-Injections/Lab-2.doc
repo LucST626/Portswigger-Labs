@@ -20,9 +20,11 @@ Esto rompe la seguridad por dos motivos:
 
 El cierre de comilla ('): Cierra prematuramente el campo del nombre de usuario.
 
-El comentario (--): Le dice a la base de datos que ignore el resto de la línea. Por lo tanto, la parte que verifica la contraseña (AND password = ...) deja de existir para el motor de la base de datos.
+El comentario (--): Le dice a la base de datos que ignore el resto de la línea. Por lo tanto, la parte que verifica la contraseña (AND password = ...)
+ deja de existir para el motor de la base de datos.
 
 4. El resultado
 La base de datos solo ejecuta: SELECT * FROM users WHERE username = 'administrator'.
 
-Como el usuario "administrator" existe, la base de datos devuelve su perfil. La aplicación ve que la base de datos "encontró una coincidencia" y te permite loguearte como administrador automáticamente, sin haber verificado jamás la contraseña.
+Como el usuario "administrator" existe, la base de datos devuelve su perfil. La aplicación ve que la base de datos "encontró una coincidencia" y 
+te permite loguearte como administrador automáticamente, sin haber verificado jamás la contraseña.

@@ -1,0 +1,48 @@
+Lab: SQL injection vulnerability allowing login bypass
+
+Este laboratorio sube un poco de nivel porque Oracle tiene reglas más estrictas que otras bases de datos. 
+Aquí el objetivo es extraer información del sistema (la versión) usando el comando UNION.
+
+Explicación paso a paso:
+
+1. El obstáculo de Oracle: La tabla DUAL
+A diferencia de MySQL o PostgreSQL, en Oracle no puedes hacer un SELECT sin especificar una tabla. 
+Si quieres pedir algo que no está en una tabla normal, Oracle te obliga a usar una tabla virtual llamada DUAL.
+
+2. El método: Ataque UNION
+Para sacar información que no pertenece a la tabla de productos, "pegamos" una segunda consulta a la original. 
+Pero para que un UNION funcione, debes cumplir dos reglas:
+
+Ambas consultas deben tener el mismo número de columnas.
+
+image 
+
+image::image.png
+
+Los tipos de datos deben ser compatibles (texto con texto).
+
+
+3. El proceso de resolución
+Para llegar a la solución, normalmente haces esto:
+
+Paso A (Contar columnas): Pruebas con ' ORDER BY 1--, luego ' ORDER BY 2--, etc., hasta que de error. 
+Si falla en el 3, sabes que hay 2 columnas.
+
+Paso B (Extraer la versión): Usas la consulta específica de Oracle para ver la versión: v$version.
+
+El payload final se ve así: 
+' UNION SELECT banner, 'vacio' FROM v$version--
+
+4. ¿Qué pasó por detrás?
+La consulta final que ejecutó el servidor fue: 
+
+SELECT name, desc FROM products WHERE category = '' UNION SELECT banner, 'vacio' FROM v$version--' AND released = 1
+
+
+banner: Es la columna de la tabla de sistema de Oracle que contiene el texto de la versión.
+
+'vacio': Como la consulta original tenía 2 columnas, estamos obligados a poner un texto de relleno en la segunda columna para que Oracle no de error.
+
+--: Comentamos el resto de la consulta original para que no estorbe.
+
+El resultado es que, en lugar de ver productos, verás una línea de texto que dice algo como: "Oracle Database 19c Enterprise Edition...".
